@@ -1,70 +1,139 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AR.js + A-Frame NFT (Image Tracking) — Base</title>
+<head>
+    <meta charset="utf-8">
+    <!-- Ajuste del Viewport CRÍTICO: Bloquea el zoom y asegura la escala inicial -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <title>AR.js NFT Fullscreen Adaptativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos base para asegurar que el BODY y la escena ocupen toda la pantalla */
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            height: 100vh; 
+            width: 100vw;
+            /* Evitar scroll o rebote no deseado en iOS/Android */
+            position: fixed; 
+            top: 0; 
+            left: 0;
+        }
+        
+        a-scene {
+            /* Forzar a-scene a ocupar el 100% del viewport */
+            height: 100%;
+            width: 100%;
+            display: block;
+        }
 
-    <!-- import aframe and then ar.js with image tracking / location based features -->
-  <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+        /* La capa del video de la cámara AR.js */
+        video {
+            /* Asegura que el video se posicione y cubra completamente el contenedor */
+            object-fit: cover;
+        }
 
-  <!-- style for the loader -->
-  <style>
-    .arjs-loader {
-      height: 100%;
-      width: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+        /* Caja de información flotante para el usuario */
+        .info-box {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999; 
+            max-width: 90%;
+            user-select: none;
+        }
+    </style>
 
-    .arjs-loader div {
-      text-align: center;
-      font-size: 1.25em;
-      color: white;
-    }
-  </style>
+    <!-- Versiones Estables (Recomendadas) -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar-nft.js"></script>
+</head>
 
-  <body style="margin : 0px; overflow: hidden;">
-    <!-- minimal loader shown until image descriptors are loaded. Loading may take a while according to the device computational power -->
-    <div class="arjs-loader">
-      <div>Loading, please wait...</div>
+<body>
+
+    <!-- Contenedor de Información -->
+    <div class="info-box bg-indigo-600 text-white p-3 rounded-lg shadow-xl text-center">
+        <p class="font-bold text-sm">Cámara 100% Fullscreen y Anti-Zoom</p>
+        <p class="text-xs">La vista de la cámara debería cubrir toda la pantalla sin barras.</p>
+        <p class="text-xs mt-1">Gira el móvil. La vista siempre ocupará el 100%.</p>
     </div>
 
-    <!-- a-frame scene -->
+    <!-- Escena A-Frame con configuración de Display Adaptativo -->
     <a-scene
-      vr-mode-ui="enabled: false;"
-      renderer="logarithmicDepthBuffer: true;"
-      embedded
-      arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
-    >
-      <!-- a-nft is the anchor that defines an Image Tracking entity -->
-      <!-- on 'url' use the path to the Image Descriptors created before. -->
-      <!-- the path should end with the name without the extension e.g. if file is 'pinball.fset' the path should end with 'pinball' -->
-      <a-nft
-        type="nft"
-        url="data/plano2d"
-        smooth="true"
-        smoothCount="10"
-        smoothTolerance=".01"
-        smoothThreshold="5"
-      >
-        <!-- as a child of the a-nft entity, you can define the content to show. here's a GLTF model entity -->
-        <a-entity
-          gltf-model="model/blenderplano.glb"
-          scale="5 5 5"
-          position="50 150 0"
+        vr-mode-ui="enabled: false;"
+        renderer="logarithmicDepthBuffer: true; antialias: true;"
+        arjs="
+            sourceType: webcam;
+            sourceWidth: 640;
+            sourceHeight: 480;
+            
+            /* **AJUSTE CLAVE DE DISPLAY (Auto)**: 
+               Permite a AR.js manejar el resize y el aspecto de forma más agresiva */
+            displayWidth: auto; 
+            displayHeight: auto;
+
+            trackingMethod: best;
+            debugUIEnabled: false;
+            patternRatio: 0.75;
+        "
         >
-        </a-entity>
-      </a-nft>
-      <!-- static camera that moves according to the device movemenents -->
-      <a-entity camera></a-entity>
+
+        <!-- Recursos (Assets) -->
+        <a-assets>
+            <a-asset-item id="model-glb" src="model/blenderplano.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Marcador NFT (Image Tracking) -->
+        <a-nft
+            type="nft"
+            url="data/nft_carretera"
+            smooth="true"
+            smoothCount="10"
+            smoothTolerance=".01"
+            smoothThreshold="5"
+        >
+            <!-- Entidad 3D: Posición y Escala corregidas -->
+            <a-entity
+                gltf-model="#model-glb"
+                scale="1 1 1"
+                position="0 0.5 0"
+                rotation="0 0 0"
+            >
+            </a-entity>
+        </a-nft>
+
+        <!-- Componente de Cámara -->
+        <a-entity camera></a-entity>
     </a-scene>
-  </body>
+
+    <script>
+        window.onload = function() {
+            const sceneEl = document.querySelector('a-scene');
+
+            // --- Monitoreo de estado de AR.js ---
+
+            sceneEl.addEventListener('arReady', function () {
+                console.log('AR.js: Escena AR lista. Iniciando el stream...');
+            });
+
+            sceneEl.addEventListener('camera-init', function () {
+                console.log('AR.js: Cámara iniciada con éxito. Listo para el tracking.');
+            });
+
+            sceneEl.addEventListener('arError', function (error) {
+                console.error('AR.js: Error crítico al iniciar AR o la cámara.', error);
+            });
+
+            // Código para forzar el inicio de la cámara en dispositivos con restricciones (ej: iOS)
+            document.body.addEventListener('touchstart', () => {
+                const arjsComp = sceneEl.components.arjs;
+                if (arjsComp && arjsComp.arSession && arjsComp.arSession.sourceParameters) {
+                    arjsComp.arSession.sourceParameters.ready = true;
+                    console.log('Touch detectado: Intentando forzar el inicio de la cámara.');
+                }
+            }, { once: true });
+        };
+    </script>
+</body>
 </html>
