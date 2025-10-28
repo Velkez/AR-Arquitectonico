@@ -1,0 +1,26 @@
+{
+  "name": "ar-test",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Velkez/AR-Arquitectonico#readme",
+  "bugs": {
+    "url": "https://github.com/Velkez/AR-Arquitectonico/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Velkez/AR-Arquitectonico.git"
+  },
+  "license": "ISC",
+  "author": "Velkez",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@mindjs/common": "^1.2.0",
+    "@mindjs/core": "^1.2.0",
+    "@mindjs/platform-koa": "^1.2.0",
+    "@mindjs/routing": "^1.2.0"
+  }
+}
